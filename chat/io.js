@@ -1,7 +1,10 @@
 const socketIo = require('socket.io');
 const Message = require('../models/message');
+const QandA = require('../models/QandA');
+const Question = require('../models/question');
+const Answer = require('../models/answer');
 const config = require('../config');
-
+const Encryption = require('../middleware/Encryption');
 const users = [];
 const connections = [];
 
@@ -65,7 +68,54 @@ const initialize = server => {
         data.message.text
       );
 
-      // save the message to the database
+      // console.log(data.message.conversationId);
+      let text = data.message.text
+      if( text.includes('?')) {
+        let qandA_text = {
+          created: data.message.created,
+          question: data.message.text,
+          answer: null,
+          conversationId: data.message.conversationId,
+          inChatRoom: data.message.inChatRoom
+        };
+        let qandA = new QandA(qandA_text);
+        QandA.addQuestionandA(qandA, (err, newMsg) => {
+          // console.log(err);
+          let question_text = {
+            created: data.message.created,
+            question: text,
+            qandAId: qandA.id,
+            conversationId: data.message.conversationId,
+            inChatRoom: data.message.inChatRoom
+          }
+          let question = new Question(question_text);
+          Question.addQuestion(question);
+        });
+      }
+      QandA.getLastQ(data.message.conversationId, (err, lastQ)=>{
+        if(lastQ != undefined) {
+          if (lastQ.answer == null && !text.includes('?')) {
+            lastQ.answer = text;
+            let qandA = new QandA(lastQ);
+            QandA.addQuestionandA(qandA, (err, newMsg) => {
+              console.log(err);
+              let answer_text = {
+                created: data.message.created,
+                answer: text,
+                qandAId: qandA.id,
+                conversationId: data.message.conversationId,
+                inChatRoom: data.message.inChatRoom
+              }
+              let answer = new Answer(answer_text);
+              Question.addQuestion(answer);
+            });
+          }
+        }
+      });
+
+      let encryptedMessage = Encryption.encrypt(data.message.text);
+      data.message.text = encryptedMessage;
+      // console.log(encryptedMessage);
       let message = new Message(data.message);
       Message.addMessage(message, (err, newMsg) => {});
     });
@@ -114,6 +164,10 @@ const searchConnections = username => {
   } else {
     return false;
   }
+
+
 };
+
+
 
 module.exports = initialize;

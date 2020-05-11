@@ -23,8 +23,9 @@
     margin: 0;
     margin-bottom: 4px;
     border: none;
-    @include border-radius-separate($topLeftRadius: 0, $topRightRadius: 0, $bottomLeftRadius: 5px, $bottomRightRadius: 5px)
-    background-color: lighten(#2c3e50, 20%);
+    background-color: #208970 !important;
+    @include border-radius-separate($topLeftRadius: 0, $topRightRadius: 0, $bottomLeftRadius: 5px, $bottomRightRadius: 5px);
+    background-color: lighten(#208970, 20%);
     @include box-shadow($x: 0px, $y: 2px);
 
     span {

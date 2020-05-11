@@ -13,18 +13,23 @@ ul {
     border-right: none;
     border-left: none;
 
+
+
     span.glyphicon-comment {
       color: #4CAF50;
     }
 
     &.online {
       span.glyphicon {
-        color: #4CAF50;
+        color: #208970;
       }
 
       img {
         border: 2px solid #4CAF50;
       }
     }
+  }
+  a.list-group-item.active {
+    background-color: #208970;
   }
 }

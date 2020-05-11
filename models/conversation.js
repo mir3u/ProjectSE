@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const User = require('./user');
 const Message = require('./message');
 const extend = require('util')._extend;
+const Encryption = require('../middleware/Encryption');
 
 // conversation schema
 const ConversationSchema = mongoose.Schema({
@@ -39,6 +40,12 @@ ConversationSchema.statics.getChatRoom = (callback) => {
           return callback(error);
         } else {
           let conversationObj = extend({}, conversation);
+          if(messages){
+            for(let i in messages){
+              messages[i].text = (Encryption.decrypt(messages[i].text));
+            }
+          }
+          // conversationObj.messages = messagesDecrypted;
           conversationObj.messages = messages;
           return callback(null, conversationObj);
         }
@@ -63,18 +70,18 @@ ConversationSchema.statics.getConversationByName = (participant1, participant2, 
               if (err2 || user2 == null) {
                 return callback("The user could not be found");
               }
-              let mihai1 = {
+              let le1 = {
                 username: user1.username,
                 id: user1._id
               };
-              let mihai2 = {
+              let le2 = {
                 username: user2.username,
                 id: user2._id
               };
-              let participants = [mihai1, mihai2];
+              let participants = [le1, le2];
               let newConv = new Conversation({
                 participants: participants,
-                name: "" + mihai1.username + "-" + mihai2.username
+                name: "" + le1.username + "-" + le2.username
               });
 
               Conversation.addConversation(newConv, (err, addedConv) => {
@@ -95,8 +102,15 @@ ConversationSchema.statics.getConversationByName = (participant1, participant2, 
               return callback(error);
             } else {
               let conversationObj = extend({}, conversation2);
-              conversationObj.messages = messages;
-              return callback(null, conversationObj);
+              let messagesDecrypted = [];
+              if(messages){
+                for(let i in messages){
+                  messages[i].text = (Encryption.decrypt(messages[i].text));
+                }
+              }
+                conversationObj.messages = messages;
+                return callback(null, conversationObj);
+
             }
           });
         }
@@ -110,6 +124,13 @@ ConversationSchema.statics.getConversationByName = (participant1, participant2, 
           return callback(error);
         } else {
           let conversationObj = extend({}, conversation1);
+
+
+          if(messages){
+            for(let i in messages){
+              messages[i].text = (Encryption.decrypt(messages[i].text));
+            }
+          }
           conversationObj.messages = messages;
           return callback(null, conversationObj);
         }
