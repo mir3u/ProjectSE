@@ -32,6 +32,7 @@ app.use(`${config.apiPath}/messages`, messageRoutes);
 // set error handling middleware
 app.use(errorMiddleware);
 
+
 app.get('*', (req, res) => {
   res.sendFile(path.resolve('public/index.html'));
 });
