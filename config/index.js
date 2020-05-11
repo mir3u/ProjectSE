@@ -6,6 +6,7 @@ const SECRET = process.env.SECRET || 'supersecretalltheway';
 const ROOT = process.env.ROOT || '';
 const CHAT_PATH = process.env.CHAT_PATH || '/chat-path';
 
+
 const apiPath = `${ROOT !== '/' ? ROOT : ''}/api`;
 
 // init config obj containing the app settings

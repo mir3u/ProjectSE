@@ -9,6 +9,7 @@ module.exports = passport => {
     secretOrKey: config.secret,
   };
 
+  //we jwt ing
   passport.use(
     new JwtStrategy(options, (jwt_payload, done) => {
       User.getUserById(jwt_payload.id, (err, user) => {
